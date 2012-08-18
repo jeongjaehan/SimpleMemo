@@ -5,6 +5,7 @@
     <string name="app_name">Test1</string>
     <string name="write">글쓰기</string>
     <string name="list">목록</string>
+    <string name="search">검색</string>
     <string name="direct_write">바로쓰기</string>
 
 </resources>

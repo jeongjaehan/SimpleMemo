@@ -6,21 +6,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class MainActivity extends Activity{
 
 	Button bt_write;
+	Button bt_search;
 	ListView memoList;
-
+	EditText searchText;
+	
 	MemoDBHelper dbHelper;
 	SQLiteDatabase db;
 	Cursor cursor;
@@ -37,6 +42,8 @@ public class MainActivity extends Activity{
 		setTitle("메모장");
 
 		bt_write =  (Button)findViewById(R.id.bt_direct_write);
+		bt_search =  (Button)findViewById(R.id.bt_search);
+		searchText =  (EditText)findViewById(R.id.tx_search);
 		memoList =  (ListView)findViewById(R.id.memoList);
 
 		loadToMemoList();
@@ -66,16 +73,31 @@ public class MainActivity extends Activity{
 				.show();
 			}
 		});
+		
+		
+		bt_search.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				loadToMemoList();
+			}
+		});
 	}
 
 /**
  * DB에서 메모목록 불러오기 
  */
 	public void loadToMemoList() {
+		
+		String keyword = searchText.getText().toString();
+		String query = "";
 
+		if(keyword.equals(""))
+			query = "select * from memo order by _id desc ";
+		else
+			query = "select * from memo where content like '%"+keyword+"%'  order by _id desc ";
+		
 		dbHelper = new MemoDBHelper(this);
 		db = dbHelper.getReadableDatabase();
-		cursor = db.rawQuery("select * from memo order by _id desc ", null);;
+		cursor = db.rawQuery(query, null);;
 		cursor.moveToFirst();
 
 		adapter = new SimpleCursorAdapter(
