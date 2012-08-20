@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -16,8 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 public class MainActivity extends Activity{
 
@@ -25,15 +22,16 @@ public class MainActivity extends Activity{
 	Button bt_search;
 	ListView memoList;
 	EditText searchText;
-	
+
 	MemoDBHelper dbHelper;
 	SQLiteDatabase db;
 	Cursor cursor;
-	
+
 	SimpleCursorAdapter adapter;
 
 
 	final static int ACT_WRITE = 0;	// instant로 보낼 requestCode
+	final static int ACT_MODIFY = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,22 +57,33 @@ public class MainActivity extends Activity{
 		memoList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v, int pos,long id) {
 				Cursor selectedItem = (Cursor)adapter.getItem(pos);
-				final int delId = selectedItem.getInt(0);
-				
+				final int _id = selectedItem.getInt(0);
+
 				new AlertDialog.Builder(MainActivity.this)
-				.setTitle("메모삭제")
-				.setMessage("이 메모를 삭제하시겠습니까?")
-				.setNegativeButton("메모삭제", new DialogInterface.OnClickListener() {
+				.setTitle("이 메모를 ")
+				.setItems(new String[] {"수정", "삭제"}, 
+						new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						deleteMemo(delId);
-						loadToMemoList();
+						switch (which) {
+						case 0:
+							Intent intent = new Intent(MainActivity.this, ModifyActivity.class);
+							intent.putExtra("_id", String.valueOf(_id));
+							startActivityForResult(intent , ACT_MODIFY);
+							break;
+
+						default:
+							deleteMemo(_id);
+							loadToMemoList();
+							break;
+						}
 					}
 				})
+				.setNegativeButton("취소", null)
 				.show();
 			}
 		});
-		
-		
+
+
 		bt_search.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				loadToMemoList();
@@ -82,11 +91,11 @@ public class MainActivity extends Activity{
 		});
 	}
 
-/**
- * DB에서 메모목록 불러오기 
- */
+	/**
+	 * DB에서 메모목록 불러오기 
+	 */
 	public void loadToMemoList() {
-		
+
 		String keyword = searchText.getText().toString();
 		String query = "";
 
@@ -94,7 +103,7 @@ public class MainActivity extends Activity{
 			query = "select * from memo order by _id desc ";
 		else
 			query = "select * from memo where content like '%"+keyword+"%'  order by _id desc ";
-		
+
 		dbHelper = new MemoDBHelper(this);
 		db = dbHelper.getReadableDatabase();
 		cursor = db.rawQuery(query, null);;
@@ -114,26 +123,31 @@ public class MainActivity extends Activity{
 		//		db.close();
 		//		cursor.close();
 	}
-	
-	
-/**
- * DB 메모 삭제  	
- */
+
+
+	/**
+	 * DB 메모 삭제  	
+	 */
 	public void deleteMemo(int delId){
 		dbHelper = new MemoDBHelper(this);
 		db = dbHelper.getWritableDatabase();
 		db.execSQL("delete from memo where _id="+delId);
 	}
 
-	
-/**
- * 인텐트 콜백 메서드
- */
+
+	/**
+	 * 인텐트 콜백 메서드
+	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d("kakaruto", "requestCode : "+requestCode+", resultCode : "+resultCode);
 		switch (requestCode) {
 		case ACT_WRITE:	// 글쓰기 
 			if(resultCode == RESULT_OK){ // 성공시 DB에서 다시 값 읽어오기 
+				loadToMemoList();
+			}
+			break;
+		case ACT_MODIFY:	// 글수정 
+			if(resultCode == RESULT_OK){  
 				loadToMemoList();
 			}
 			break;
@@ -143,10 +157,10 @@ public class MainActivity extends Activity{
 		}
 	}
 
-	
-/**
- * 어플 종료시 db 리소스 제거
- */
+
+	/**
+	 * 어플 종료시 db 리소스 제거
+	 */
 	public void onDestroy() {
 		db.close();
 		dbHelper.close();
