@@ -10,7 +10,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".MainActivity"
+            android:name=".TestTabActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,8 +19,11 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="kr.kakaruto.WriteActivity" android:label="WriteActivity" />
-        <activity android:name="kr.kakaruto.ModifyActivity" android:label="ModifyActivity" />
+        <activity android:name=".MainActivity" android:label="MainActivity" />
+        <activity android:name=".WriteActivity" android:label="WriteActivity" />
+        <activity android:name=".ModifyActivity" android:label="ModifyActivity" />
+        <activity android:name=".FavorityActivity" android:label="FavorityActivity" />
+        <activity android:name=".ConfActivity" android:label="ConfActivity" />
     </application>
 
 </manifest>
