@@ -1,4 +1,4 @@
-package kr.kakaruto;
+package kr.kakaruto.activity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

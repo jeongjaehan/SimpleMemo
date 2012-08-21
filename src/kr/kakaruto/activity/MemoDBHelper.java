@@ -1,10 +1,10 @@
-package kr.kakaruto;
+package kr.kakaruto.activity;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-class MemoDBHelper extends SQLiteOpenHelper {
+public class MemoDBHelper extends SQLiteOpenHelper {
 	public MemoDBHelper(Context context) {
 		super(context, "Memo.db", null, 1);
 	}
