@@ -9,8 +9,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,15 +26,19 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity{
 
+	// activity 내 widget 변수 
 	Button bt_write;
 	Button bt_search;
 	ListView lv_memoList;
 	EditText tx_search;
-	ArrayList<Memo> memoList;
 	
+	// 메모 서비스 
 	MemoService memoService;
+	
+	ArrayList<Memo> memoList;
 
-	final static int ACT_WRITE = 0;	// instant로 보낼 requestCode
+	//defined request code
+	final static int ACT_WRITE = 0;	
 	final static int ACT_MODIFY = 1;
 
 	@Override
@@ -51,6 +53,7 @@ public class MainActivity extends Activity{
 		
 		memoService = new MemoService();
 
+		// TODO 키보드 숨기는 로직인데 왜 안될까?
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInputFromWindow(tx_search.getWindowToken(), 0, 1);
 
@@ -66,8 +69,7 @@ public class MainActivity extends Activity{
 
 		lv_memoList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v, int pos,long id) {
-				Memo memo = (Memo)memoList.get(pos);
-				final int _id = memo.get_id();
+				final Memo memo = (Memo)memoList.get(pos);
 
 				new AlertDialog.Builder(MainActivity.this)
 				.setTitle("이 메모를 ")
@@ -77,12 +79,13 @@ public class MainActivity extends Activity{
 						switch (which) {
 						case 0:
 							Intent intent = new Intent(MainActivity.this, ModifyActivity.class);
-							intent.putExtra("_id", String.valueOf(_id));
+							intent.putExtra("memo", memo);
 							startActivityForResult(intent , ACT_MODIFY);
 							break;
 
 						default:
-							deleteMemo(_id);
+							memo.setContext(MainActivity.this);
+							memoService.deleteMemo(memo);
 							loadToMemoList();
 							break;
 						}
@@ -118,18 +121,6 @@ public class MainActivity extends Activity{
 
 	}
 
-
-	/**
-	 * DB 메모 삭제  	
-	 */
-	public void deleteMemo(int delId){
-		MemoDBHelper dbHelper = new MemoDBHelper(this);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-		db.execSQL("delete from memo where _id="+delId);
-
-		dbHelper.close();
-		db.close();
-	}
 
 
 	/**
