@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -53,20 +54,22 @@ public class MainActivity extends Activity{
 		
 		memoService = new MemoService();
 
-		// TODO 키보드 숨기는 로직인데 왜 안될까?
+//		 TODO 키보드 숨기는 로직인데 왜 안될까?
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInputFromWindow(tx_search.getWindowToken(), 0, 1);
 
 		loadToMemoList(); // 메모목록 로딩
 
+//		글쓰기 이벤트
 		bt_write.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				Log.d("kakaruto", "글쓰기 화면으로 이동");
 				Intent intent = new Intent(MainActivity.this, WriteActivity.class);
 				startActivityForResult(intent , ACT_WRITE);
 			}
 		});
+		
 
+//		메모 클릭 이벤트
 		lv_memoList.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v, int pos,long id) {
 				final Memo memo = (Memo)memoList.get(pos);
@@ -96,7 +99,7 @@ public class MainActivity extends Activity{
 			}
 		});
 
-
+//		검색 이벤트
 		bt_search.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				loadToMemoList();
@@ -145,12 +148,6 @@ public class MainActivity extends Activity{
 		}
 	}
 
-
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
-
 	/**
 	 * 메모 커스텀 아답터 
 	 *
@@ -170,18 +167,48 @@ public class MainActivity extends Activity{
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.memo_row, null);
 			}
-			Memo memo = items.get(position);
+			
+			final Memo memo = items.get(position);
+			
 			if (memo != null) {
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+				ImageView iv_fav =  (ImageView)v.findViewById(R.id.iv_fav);
 				if (tt != null){
 					tt.setText(memo.getContent());                            
 				}
 				if(bt != null){
-					bt.setText("일자: "+ memo.getRdate());
+					bt.setText(memo.getRdate());
 				}
+				
+				//즐겨찾기 표시 
+				if(iv_fav != null){
+					if(memo.getIsFav().equals("Y"))
+						iv_fav.setImageResource(R.drawable.fav_on);
+					else
+						iv_fav.setImageResource(R.drawable.fav_off);
+				}
+				
+//				즐겨찾기 이벤트
+				iv_fav.setOnClickListener(new Button.OnClickListener() {
+					public void onClick(View v) {
+						Memo pMemo = new Memo();
+						pMemo.set_id(memo.get_id());
+						String _isFav = memo.getIsFav().equals("Y")? "N" : "Y"; 
+						pMemo.setIsFav(_isFav);
+						pMemo.setContext(MainActivity.this);
+						
+						memoService.updateMemo(pMemo);
+						loadToMemoList();
+					}
+				});
 			}
 			return v;
 		}
+	}
+	
+	
+	public void onDestroy() {
+		super.onDestroy();
 	}
 }

@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Memo implements Parcelable{
-	private int _id;
+	private int _id = -1;
 	private String content;
 	private String rdate;
 	private String isFav;
