@@ -19,12 +19,29 @@ public class MemoDao {
 		ArrayList<Memo> returnMemoList = new ArrayList<Memo>();
 
 		StringBuffer query =new StringBuffer();
-		String content = pMemo.getContent();
+		query.append("select _id, content, rdate, isFav from memo ");
+		
+		boolean isFirst = true;	// and 조건이 처음인지 ?
 
-		if(content.equals(""))
-			query.append("select _id, content, rdate, isFav from memo order by _id desc ");
-		else
-			query.append("select _id, content, rdate, isFav from memo where content like '%"+content+"%'  order by _id desc ");
+		if(pMemo.getContent() != null && !pMemo.getContent().equals("")){
+			query.append("where content like '%"+pMemo.getContent()+"%' ");
+			isFirst = false;
+		}
+		if(pMemo.getRdate() != null && !pMemo.getRdate().equals("")){
+			if(isFirst) query.append("where ");	// 조건이 처음일 경우 where 
+			else		query.append("and ");	// 조건이 처음이 아닐경우 and
+			
+			query.append(" rdate='"+pMemo.getRdate()+"' ");
+			isFirst = false;
+		}
+		if(pMemo.getIsFav() != null && !pMemo.getIsFav().equals("")){
+			if(isFirst) query.append("where "); 
+			else		query.append("and ");
+			query.append(" isFav='"+pMemo.getIsFav()+"' ");
+			isFirst = false;
+		}
+		
+		query.append("order by _id desc ");
 
 		MemoDBHelper dbHelper = new MemoDBHelper(pMemo.getContext());
 		SQLiteDatabase db = dbHelper.getReadableDatabase();

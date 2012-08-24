@@ -25,6 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+/**
+ * 메인화면
+ * @author kakaruto
+ *
+ */
 public class MainActivity extends Activity{
 
 	// activity 내 widget 변수 
@@ -98,6 +103,7 @@ public class MainActivity extends Activity{
 				.show();
 			}
 		});
+		
 
 //		검색 이벤트
 		bt_search.setOnClickListener(new Button.OnClickListener() {
@@ -105,6 +111,13 @@ public class MainActivity extends Activity{
 				loadToMemoList();
 			}
 		});
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		loadToMemoList();
 	}
 
 	/**
@@ -152,7 +165,7 @@ public class MainActivity extends Activity{
 	 * 메모 커스텀 아답터 
 	 *
 	 */
-	private  class MemoAdapter extends ArrayAdapter<Memo> {
+	public  class MemoAdapter extends ArrayAdapter<Memo> {
 		private ArrayList<Memo> items;
 
 		public MemoAdapter(Context context,  int textViewResourceId, ArrayList<Memo> items) {
