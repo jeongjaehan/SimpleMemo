@@ -31,7 +31,7 @@ public class FavorityActivity extends MainActivity {
 	}
 	
 	/**
-	 * 즐겨찾기 메모 목록만 로딩
+	 * 즐겨찾기된 메모 목록 로딩
 	 */
 	public void loadToMemoList() {
 		

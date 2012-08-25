@@ -8,7 +8,7 @@
         android:id="@+id/tx_modify"
         android:layout_width="match_parent"
         android:layout_height="500px"
-        android:ems="10"
+         android:gravity="top"
         android:inputType="textMultiLine" >
     </EditText>
 

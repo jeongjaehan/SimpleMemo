@@ -9,6 +9,7 @@ import kr.kakaruto.service.MemoService;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Selection;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,9 +28,8 @@ public class ModifyActivity extends Activity {
 
 		tx_modify = (EditText)findViewById(R.id.tx_modify);
 
-		tx_modify.requestFocus();
-		tx_modify.setSelection(0);
-
+		tx_modify.setSelection(tx_modify.getText().length());
+		
 		memoService = new MemoService();
 
 		Button bt_modify = (Button)findViewById(R.id.bt_modify);

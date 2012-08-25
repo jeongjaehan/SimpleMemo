@@ -24,7 +24,7 @@ public class WriteActivity extends Activity {
 
 		tx_write = (EditText)findViewById(R.id.tx_write);
 
-		tx_write.requestFocus();
+//		tx_write.requestFocus();
 		tx_write.setSelection(0);
 		
 		memoService = new MemoService();

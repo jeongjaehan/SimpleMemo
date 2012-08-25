@@ -176,6 +176,7 @@ public class MainActivity extends Activity{
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
+			int topTextMaxLength = 20;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.memo_row, null);
@@ -188,7 +189,12 @@ public class MainActivity extends Activity{
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
 				ImageView iv_fav =  (ImageView)v.findViewById(R.id.iv_fav);
 				if (tt != null){
-					tt.setText(memo.getContent());                            
+					String content = memo.getContent();
+					if(content.getBytes().length > topTextMaxLength)
+						tt.setText(content.substring(0, topTextMaxLength)+"..."); 
+					else
+						tt.setText(content); 
+						
 				}
 				if(bt != null){
 					bt.setText(memo.getRdate());
